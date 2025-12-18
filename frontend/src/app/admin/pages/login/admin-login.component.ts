@@ -9,9 +9,7 @@ import { AuthService } from '../../../services/auth.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    <div
-      class="min-h-screen bg-gray-900 flex items-center justify-center px-4"
-    >
+    <div class="min-h-screen bg-gray-900 flex items-center justify-center px-4">
       <div class="max-w-md w-full">
         <!-- Logo -->
         <div class="text-center mb-8">
@@ -182,28 +180,32 @@ export class AdminLoginComponent {
     this.loading.set(true);
     this.error.set('');
 
-    this.authService.login({ email: this.email, password: this.password }).subscribe({
-      next: (response) => {
-        this.loading.set(false);
-        
-        if (response.role !== 'ADMIN') {
-          this.error.set('Acesso não autorizado. Apenas administradores podem acessar.');
-          this.authService.logout();
-          return;
-        }
+    this.authService
+      .login({ email: this.email, password: this.password })
+      .subscribe({
+        next: (response) => {
+          this.loading.set(false);
 
-        this.router.navigateByUrl(this.returnUrl);
-      },
-      error: (err) => {
-        this.loading.set(false);
-        if (err.status === 401) {
-          this.error.set('Email ou senha incorretos');
-        } else if (err.status === 429) {
-          this.error.set('Muitas tentativas. Aguarde alguns minutos.');
-        } else {
-          this.error.set('Erro ao fazer login. Tente novamente.');
-        }
-      },
-    });
+          if (response.role !== 'ADMIN') {
+            this.error.set(
+              'Acesso não autorizado. Apenas administradores podem acessar.'
+            );
+            this.authService.logout();
+            return;
+          }
+
+          this.router.navigateByUrl(this.returnUrl);
+        },
+        error: (err) => {
+          this.loading.set(false);
+          if (err.status === 401) {
+            this.error.set('Email ou senha incorretos');
+          } else if (err.status === 429) {
+            this.error.set('Muitas tentativas. Aguarde alguns minutos.');
+          } else {
+            this.error.set('Erro ao fazer login. Tente novamente.');
+          }
+        },
+      });
   }
 }

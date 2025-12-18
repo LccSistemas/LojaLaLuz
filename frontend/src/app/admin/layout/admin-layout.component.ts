@@ -1,6 +1,11 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, RouterLink, RouterLinkActive, Router } from '@angular/router';
+import {
+  RouterOutlet,
+  RouterLink,
+  RouterLinkActive,
+  Router,
+} from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 
 @Component({
@@ -186,7 +191,7 @@ import { AuthService } from '../../services/auth.service';
 
               <!-- Profile -->
               <div class="relative">
-                <button 
+                <button
                   (click)="showProfileMenu = !showProfileMenu"
                   class="flex items-center space-x-2 hover:bg-gray-100 rounded-lg p-2 transition-colors"
                 >
@@ -199,30 +204,67 @@ import { AuthService } from '../../services/auth.service';
                     class="hidden md:block text-sm font-medium text-gray-700"
                     >{{ userName }}</span
                   >
-                  <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  <svg
+                    class="w-4 h-4 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    />
                   </svg>
                 </button>
 
                 <!-- Dropdown Menu -->
                 @if (showProfileMenu) {
-                <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                <div
+                  class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50"
+                >
                   <div class="px-4 py-2 border-b border-gray-100">
-                    <p class="text-sm font-medium text-gray-900">{{ userName }}</p>
+                    <p class="text-sm font-medium text-gray-900">
+                      {{ userName }}
+                    </p>
                     <p class="text-xs text-gray-500">{{ userEmail }}</p>
                   </div>
-                  <a href="/" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  <a
+                    href="/"
+                    class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                  >
+                    <svg
+                      class="w-4 h-4 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                      />
                     </svg>
                     Ver Loja
                   </a>
-                  <button 
+                  <button
                     (click)="logout()"
                     class="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50"
                   >
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    <svg
+                      class="w-4 h-4 mr-2"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                      />
                     </svg>
                     Sair
                   </button>
@@ -249,10 +291,7 @@ import { AuthService } from '../../services/auth.service';
 
       <!-- Profile Menu Overlay -->
       @if (showProfileMenu) {
-      <div
-        class="fixed inset-0 z-40"
-        (click)="showProfileMenu = false"
-      ></div>
+      <div class="fixed inset-0 z-40" (click)="showProfileMenu = false"></div>
       }
     </div>
   `,

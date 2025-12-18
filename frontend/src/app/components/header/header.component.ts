@@ -1,10 +1,12 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { CartService } from '../../services/cart.service';
 import { AuthService } from '../../services/auth.service';
 import { SiteConfigService } from '../../services/site-config.service';
+import { CategoryService } from '../../services/category.service';
 import { CartDrawerComponent } from '../cart-drawer/cart-drawer.component';
+import { Category } from '../../models';
 
 @Component({
   selector: 'app-header',
@@ -107,7 +109,11 @@ import { CartDrawerComponent } from '../cart-drawer/cart-drawer.component';
             class="absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0"
           >
             @if (siteConfig.storeLogo()) {
-            <img [src]="siteConfig.storeLogo()" [alt]="siteConfig.storeName()" class="h-8 lg:h-10" />
+            <img
+              [src]="siteConfig.storeLogo()"
+              [alt]="siteConfig.storeName()"
+              class="h-8 lg:h-10"
+            />
             } @else {
             <h1 class="font-serif text-2xl lg:text-3xl tracking-wide">
               {{ siteConfig.storeName() }}
@@ -246,42 +252,14 @@ import { CartDrawerComponent } from '../cart-drawer/cart-drawer.component';
             class="nav-link"
             >Novidades</a
           >
+          @for (cat of categories(); track cat.id) {
           <a
             routerLink="/produtos"
-            [queryParams]="{ category: 'vestidos' }"
+            [queryParams]="{ category: cat.slug }"
             class="nav-link"
-            >Vestidos</a
+            >{{ cat.name }}</a
           >
-          <a
-            routerLink="/produtos"
-            [queryParams]="{ category: 'tops' }"
-            class="nav-link"
-            >Tops</a
-          >
-          <a
-            routerLink="/produtos"
-            [queryParams]="{ category: 'calcas' }"
-            class="nav-link"
-            >Calças</a
-          >
-          <a
-            routerLink="/produtos"
-            [queryParams]="{ category: 'saias' }"
-            class="nav-link"
-            >Saias</a
-          >
-          <a
-            routerLink="/produtos"
-            [queryParams]="{ category: 'conjuntos' }"
-            class="nav-link"
-            >Conjuntos</a
-          >
-          <a
-            routerLink="/produtos"
-            [queryParams]="{ category: 'acessorios' }"
-            class="nav-link"
-            >Acessórios</a
-          >
+          }
           <a
             routerLink="/produtos"
             [queryParams]="{ sale: true }"
@@ -377,54 +355,16 @@ import { CartDrawerComponent } from '../cart-drawer/cart-drawer.component';
           >
             Novidades
           </a>
+          @for (cat of categories(); track cat.id) {
           <a
             routerLink="/produtos"
-            [queryParams]="{ category: 'vestidos' }"
+            [queryParams]="{ category: cat.slug }"
             (click)="mobileMenuOpen.set(false)"
             class="block py-3 text-sm tracking-wider uppercase border-b border-primary-50"
           >
-            Vestidos
+            {{ cat.name }}
           </a>
-          <a
-            routerLink="/produtos"
-            [queryParams]="{ category: 'tops' }"
-            (click)="mobileMenuOpen.set(false)"
-            class="block py-3 text-sm tracking-wider uppercase border-b border-primary-50"
-          >
-            Tops
-          </a>
-          <a
-            routerLink="/produtos"
-            [queryParams]="{ category: 'calcas' }"
-            (click)="mobileMenuOpen.set(false)"
-            class="block py-3 text-sm tracking-wider uppercase border-b border-primary-50"
-          >
-            Calças
-          </a>
-          <a
-            routerLink="/produtos"
-            [queryParams]="{ category: 'saias' }"
-            (click)="mobileMenuOpen.set(false)"
-            class="block py-3 text-sm tracking-wider uppercase border-b border-primary-50"
-          >
-            Saias
-          </a>
-          <a
-            routerLink="/produtos"
-            [queryParams]="{ category: 'conjuntos' }"
-            (click)="mobileMenuOpen.set(false)"
-            class="block py-3 text-sm tracking-wider uppercase border-b border-primary-50"
-          >
-            Conjuntos
-          </a>
-          <a
-            routerLink="/produtos"
-            [queryParams]="{ category: 'acessorios' }"
-            (click)="mobileMenuOpen.set(false)"
-            class="block py-3 text-sm tracking-wider uppercase border-b border-primary-50"
-          >
-            Acessórios
-          </a>
+          }
           <a
             routerLink="/produtos"
             [queryParams]="{ sale: true }"
@@ -490,8 +430,9 @@ import { CartDrawerComponent } from '../cart-drawer/cart-drawer.component';
     `,
   ],
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
   private router = inject(Router);
+  private categoryService = inject(CategoryService);
   cart = inject(CartService);
   auth = inject(AuthService);
   siteConfig = inject(SiteConfigService);
@@ -499,6 +440,18 @@ export class HeaderComponent {
   mobileMenuOpen = signal(false);
   searchOpen = signal(false);
   cartOpen = signal(false);
+  categories = signal<Category[]>([]);
+
+  ngOnInit(): void {
+    this.loadCategories();
+  }
+
+  loadCategories(): void {
+    this.categoryService.getCategories().subscribe({
+      next: (cats) => this.categories.set(cats.filter((c) => c.active)),
+      error: () => this.categories.set([]),
+    });
+  }
 
   search(event: Event): void {
     const query = (event.target as HTMLInputElement).value;

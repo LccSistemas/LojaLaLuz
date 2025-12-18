@@ -534,14 +534,15 @@ export class ProductFormComponent implements OnInit {
       material: formValue.material || null,
       categoryId: formValue.categoryId || null,
       imageUrls: this.uploadedImages.map((img) => img.url),
-      variants: formValue.variants?.map((v: any) => ({
-        size: v.size,
-        color: v.color,
-        colorCode: v.colorCode || null,
-        sku: v.sku || null,
-        stockQuantity: v.stockQuantity || 0,
-        additionalPrice: v.additionalPrice || null,
-      })) || [],
+      variants:
+        formValue.variants?.map((v: any) => ({
+          size: v.size,
+          color: v.color,
+          colorCode: v.colorCode || null,
+          sku: v.sku || null,
+          stockQuantity: v.stockQuantity || 0,
+          additionalPrice: v.additionalPrice || null,
+        })) || [],
     };
 
     const request = this.isEditing

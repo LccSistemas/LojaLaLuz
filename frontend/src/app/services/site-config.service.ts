@@ -95,11 +95,13 @@ const DEFAULT_CONFIG: StoreConfig = {
   storeAddress: 'São Paulo, SP',
   storeCnpj: '',
 
-  promoBarText: 'FRETE GRÁTIS PARA COMPRAS ACIMA DE R$ 299 | PARCELE EM ATÉ 6X SEM JUROS',
+  promoBarText:
+    'FRETE GRÁTIS PARA COMPRAS ACIMA DE R$ 299 | PARCELE EM ATÉ 6X SEM JUROS',
   promoBarActive: true,
 
   hero: {
-    imageUrl: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1920',
+    imageUrl:
+      'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1920',
     title: 'Summer Essentials',
     subtitle: 'Nova Coleção',
     buttonText: 'Comprar Agora',
@@ -109,14 +111,16 @@ const DEFAULT_CONFIG: StoreConfig = {
 
   bannerSplit: [
     {
-      imageUrl: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800',
+      imageUrl:
+        'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800',
       title: 'Vestidos',
       subtitle: 'Coleção',
       link: '/produtos?category=vestidos',
       active: true,
     },
     {
-      imageUrl: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800',
+      imageUrl:
+        'https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800',
       title: 'Conjuntos',
       subtitle: 'Coleção',
       link: '/produtos?category=conjuntos',
@@ -125,7 +129,8 @@ const DEFAULT_CONFIG: StoreConfig = {
   ],
 
   saleBanner: {
-    imageUrl: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1920',
+    imageUrl:
+      'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1920',
     title: 'Até 50% OFF',
     subtitle: 'Aproveite',
     buttonText: 'Ver Sale',
@@ -161,8 +166,16 @@ const DEFAULT_CONFIG: StoreConfig = {
   ],
 
   socialLinks: [
-    { platform: 'instagram', url: 'https://instagram.com/lojalaluz', active: true },
-    { platform: 'facebook', url: 'https://facebook.com/lojalaluz', active: false },
+    {
+      platform: 'instagram',
+      url: 'https://instagram.com/lojalaluz',
+      active: true,
+    },
+    {
+      platform: 'facebook',
+      url: 'https://facebook.com/lojalaluz',
+      active: false,
+    },
     { platform: 'tiktok', url: 'https://tiktok.com/@lojalaluz', active: false },
     { platform: 'pinterest', url: '', active: false },
   ],
@@ -181,7 +194,8 @@ const DEFAULT_CONFIG: StoreConfig = {
   defaultShippingCost: 19.9,
 
   metaTitle: 'La Luz - Moda Feminina',
-  metaDescription: 'Descubra as últimas tendências em moda feminina. Vestidos, blusas, calças e muito mais.',
+  metaDescription:
+    'Descubra as últimas tendências em moda feminina. Vestidos, blusas, calças e muito mais.',
 
   pixEnabled: true,
   creditCardEnabled: true,
@@ -204,11 +218,21 @@ export class SiteConfigService {
   readonly hero = computed(() => this.configSignal().hero);
   readonly bannerSplit = computed(() => this.configSignal().bannerSplit);
   readonly saleBanner = computed(() => this.configSignal().saleBanner);
-  readonly features = computed(() => this.configSignal().features.filter(f => f.active));
-  readonly socialLinks = computed(() => this.configSignal().socialLinks.filter(s => s.active));
-  readonly instagramUsername = computed(() => this.configSignal().instagramUsername);
-  readonly instagramImages = computed(() => this.configSignal().instagramImages);
-  readonly freeShippingMinimum = computed(() => this.configSignal().freeShippingMinimum);
+  readonly features = computed(() =>
+    this.configSignal().features.filter((f) => f.active)
+  );
+  readonly socialLinks = computed(() =>
+    this.configSignal().socialLinks.filter((s) => s.active)
+  );
+  readonly instagramUsername = computed(
+    () => this.configSignal().instagramUsername
+  );
+  readonly instagramImages = computed(
+    () => this.configSignal().instagramImages
+  );
+  readonly freeShippingMinimum = computed(
+    () => this.configSignal().freeShippingMinimum
+  );
 
   private loadConfig(): StoreConfig {
     const stored = localStorage.getItem('laluz_site_config');
