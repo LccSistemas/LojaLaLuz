@@ -37,6 +37,10 @@ public class Category {
     @Builder.Default
     private Boolean active = true;
 
+    @Builder.Default
+    @Column(name = "display_order")
+    private Integer displayOrder = 0;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
     private Category parent;

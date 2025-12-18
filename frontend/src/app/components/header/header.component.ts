@@ -115,7 +115,7 @@ import { Category } from '../../models';
               class="h-8 lg:h-10"
             />
             } @else {
-            <h1 class="font-serif text-2xl lg:text-3xl tracking-wide">
+            <h1 class="font-serif text-2xl lg:text-3xl tracking-wide uppercase">
               {{ siteConfig.storeName() }}
             </h1>
             }
@@ -244,26 +244,26 @@ import { Category } from '../../models';
 
         <!-- Navigation (Desktop) -->
         <nav
-          class="hidden lg:flex items-center justify-center gap-10 py-3 border-t border-primary-50"
+          class="hidden lg:flex items-center justify-center gap-8 py-3 border-t border-primary-50 overflow-x-auto scrollbar-hide"
         >
           <a
             routerLink="/produtos"
             [queryParams]="{ new: true }"
-            class="nav-link"
+            class="nav-link whitespace-nowrap"
             >Novidades</a
           >
           @for (cat of categories(); track cat.id) {
           <a
             routerLink="/produtos"
             [queryParams]="{ category: cat.slug }"
-            class="nav-link"
+            class="nav-link whitespace-nowrap"
             >{{ cat.name }}</a
           >
           }
           <a
             routerLink="/produtos"
             [queryParams]="{ sale: true }"
-            class="nav-link text-sale"
+            class="nav-link text-sale whitespace-nowrap"
             >Sale</a
           >
         </nav>

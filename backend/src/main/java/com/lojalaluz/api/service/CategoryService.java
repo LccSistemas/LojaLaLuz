@@ -18,7 +18,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     public List<CategoryDTO> getAllCategories() {
-        return categoryRepository.findByActiveTrue().stream()
+        return categoryRepository.findByActiveTrueOrderByDisplayOrderAsc().stream()
                 .map(this::toDTO)
                 .collect(Collectors.toList());
     }
@@ -47,6 +47,7 @@ public class CategoryService {
                 .name(dto.getName())
                 .description(dto.getDescription())
                 .imageUrl(dto.getImageUrl())
+                .displayOrder(dto.getDisplayOrder() != null ? dto.getDisplayOrder() : 0)
                 .active(true)
                 .build();
 
@@ -68,6 +69,9 @@ public class CategoryService {
         category.setName(dto.getName());
         category.setDescription(dto.getDescription());
         category.setImageUrl(dto.getImageUrl());
+        if (dto.getDisplayOrder() != null) {
+            category.setDisplayOrder(dto.getDisplayOrder());
+        }
 
         if (dto.getParentId() != null && !dto.getParentId().equals(id)) {
             Category parent = categoryRepository.findById(dto.getParentId())
@@ -95,6 +99,7 @@ public class CategoryService {
                 .slug(category.getSlug())
                 .imageUrl(category.getImageUrl())
                 .active(category.getActive())
+                .displayOrder(category.getDisplayOrder())
                 .parentId(category.getParent() != null ? category.getParent().getId() : null)
                 .parentName(category.getParent() != null ? category.getParent().getName() : null)
                 .productCount(category.getProducts() != null ? category.getProducts().size() : 0)

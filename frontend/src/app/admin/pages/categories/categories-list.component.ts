@@ -14,6 +14,7 @@ interface Category {
   description: string;
   imageUrl: string;
   active: boolean;
+  displayOrder: number;
   productCount: number;
 }
 
@@ -122,15 +123,18 @@ interface Category {
           <div class="p-4">
             <div class="flex items-center justify-between mb-2">
               <h3 class="font-semibold text-gray-900">{{ category.name }}</h3>
-              <span
-                class="px-2 py-1 text-xs rounded-full"
-                [class.bg-green-100]="category.active"
-                [class.text-green-800]="category.active"
-                [class.bg-gray-100]="!category.active"
-                [class.text-gray-600]="!category.active"
-              >
-                {{ category.active ? 'Ativa' : 'Inativa' }}
-              </span>
+              <div class="flex items-center gap-2">
+                <span class="text-xs text-gray-400">Ordem: {{ category.displayOrder || 0 }}</span>
+                <span
+                  class="px-2 py-1 text-xs rounded-full"
+                  [class.bg-green-100]="category.active"
+                  [class.text-green-800]="category.active"
+                  [class.bg-gray-100]="!category.active"
+                  [class.text-gray-600]="!category.active"
+                >
+                  {{ category.active ? 'Ativa' : 'Inativa' }}
+                </span>
+              </div>
             </div>
             <p class="text-sm text-gray-500 mb-2">
               {{ category.description || 'Sem descrição' }}
@@ -223,6 +227,19 @@ interface Category {
                   (imagesUploaded)="onImageUploaded($event)"
                 />
               </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1"
+                  >Ordem de Exibição</label
+                >
+                <input
+                  type="number"
+                  [(ngModel)]="formData.displayOrder"
+                  class="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                  placeholder="0"
+                  min="0"
+                />
+                <p class="text-xs text-gray-500 mt-1">Menor número aparece primeiro no menu</p>
+              </div>
               <label class="flex items-center">
                 <input
                   type="checkbox"
@@ -269,6 +286,7 @@ export class CategoriesListComponent implements OnInit {
     slug: '',
     description: '',
     imageUrl: '',
+    displayOrder: 0,
     active: true,
   };
 
@@ -292,6 +310,7 @@ export class CategoriesListComponent implements OnInit {
       slug: '',
       description: '',
       imageUrl: '',
+      displayOrder: 0,
       active: true,
     };
     this.showModal.set(true);
@@ -312,6 +331,7 @@ export class CategoriesListComponent implements OnInit {
       slug: category.slug,
       description: category.description || '',
       imageUrl: category.imageUrl || '',
+      displayOrder: category.displayOrder || 0,
       active: category.active,
     };
     this.showModal.set(true);

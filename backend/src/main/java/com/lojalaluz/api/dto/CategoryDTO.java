@@ -14,6 +14,7 @@ public class CategoryDTO {
     private String slug;
     private String imageUrl;
     private Boolean active;
+    private Integer displayOrder;
     private Long parentId;
     private String parentName;
     private List<CategoryDTO> subcategories;

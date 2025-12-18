@@ -46,6 +46,7 @@ export interface Category {
   slug: string;
   imageUrl: string;
   active: boolean;
+  displayOrder: number;
   parentId: number | null;
   parentName: string | null;
   subcategories: Category[];
