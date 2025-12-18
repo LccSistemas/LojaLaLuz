@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { CartService } from '../../services/cart.service';
 import { AuthService } from '../../services/auth.service';
+import { SiteConfigService } from '../../services/site-config.service';
 import { CartDrawerComponent } from '../cart-drawer/cart-drawer.component';
 
 @Component({
@@ -11,11 +12,13 @@ import { CartDrawerComponent } from '../cart-drawer/cart-drawer.component';
   imports: [CommonModule, RouterLink, CartDrawerComponent],
   template: `
     <!-- Announcement Bar -->
+    @if (siteConfig.promoBarActive()) {
     <div class="bg-primary-900 text-white text-center py-2.5">
       <p class="text-xs tracking-wider">
-        FRETE GRÁTIS PARA COMPRAS ACIMA DE R$ 299 | PARCELE EM ATÉ 6X SEM JUROS
+        {{ siteConfig.promoBarText() }}
       </p>
     </div>
+    }
 
     <!-- Main Header -->
     <header class="bg-white sticky top-0 z-40 border-b border-primary-100">
@@ -103,9 +106,13 @@ import { CartDrawerComponent } from '../cart-drawer/cart-drawer.component';
             routerLink="/"
             class="absolute left-1/2 -translate-x-1/2 lg:static lg:translate-x-0"
           >
+            @if (siteConfig.storeLogo()) {
+            <img [src]="siteConfig.storeLogo()" [alt]="siteConfig.storeName()" class="h-8 lg:h-10" />
+            } @else {
             <h1 class="font-serif text-2xl lg:text-3xl tracking-wide">
-              LA LUZ
+              {{ siteConfig.storeName() }}
             </h1>
+            }
           </a>
 
           <!-- Right: Account + Wishlist + Cart -->
@@ -343,7 +350,7 @@ import { CartDrawerComponent } from '../cart-drawer/cart-drawer.component';
         <div
           class="flex items-center justify-between p-5 border-b border-primary-100"
         >
-          <span class="font-serif text-xl">LA LUZ</span>
+          <span class="font-serif text-xl">{{ siteConfig.storeName() }}</span>
           <button (click)="mobileMenuOpen.set(false)">
             <svg
               class="w-6 h-6"
@@ -487,6 +494,7 @@ export class HeaderComponent {
   private router = inject(Router);
   cart = inject(CartService);
   auth = inject(AuthService);
+  siteConfig = inject(SiteConfigService);
 
   mobileMenuOpen = signal(false);
   searchOpen = signal(false);

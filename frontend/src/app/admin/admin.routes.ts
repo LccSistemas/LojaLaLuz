@@ -72,6 +72,13 @@ export const ADMIN_ROUTES: Routes = [
           ),
       },
       {
+        path: 'site-config',
+        loadComponent: () =>
+          import('./pages/site-config/site-config.component').then(
+            (m) => m.SiteConfigComponent
+          ),
+      },
+      {
         path: 'settings',
         loadComponent: () =>
           import('./pages/settings/settings.component').then(
