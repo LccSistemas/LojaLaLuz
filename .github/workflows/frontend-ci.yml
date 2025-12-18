@@ -78,7 +78,7 @@ jobs:
         env:
           NODE_ENV: production
 
-      - name: Deploy to Firebase Hosting
-        run: npx firebase-tools deploy --only hosting --token "$FIREBASE_TOKEN"
+      - name: Deploy to Firebase Hosting & Storage Rules
+        run: npx firebase-tools deploy --only hosting,storage --token "$FIREBASE_TOKEN"
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
