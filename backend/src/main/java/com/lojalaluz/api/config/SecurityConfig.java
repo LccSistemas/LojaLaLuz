@@ -55,6 +55,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/site-config").permitAll()
                         .requestMatchers("/api/payments/webhook").permitAll()
                         .requestMatchers("/api/orders/guest").permitAll()
                         .requestMatchers("/api/orders/number/**").permitAll()
@@ -68,6 +69,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/categories/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/categories/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/categories/**").hasRole("ADMIN")
+                        // Admin - Site Config
+                        .requestMatchers(HttpMethod.PUT, "/api/site-config").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH, "/api/site-config").hasRole("ADMIN")
                         // Admin - Orders
                         .requestMatchers("/api/orders/admin/**").hasRole("ADMIN")
                         // Admin geral

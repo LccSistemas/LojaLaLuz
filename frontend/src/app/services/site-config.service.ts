@@ -1,4 +1,7 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
+import { firstValueFrom } from 'rxjs';
 
 export interface HeroConfig {
   imageUrl: string;
@@ -206,7 +209,9 @@ const DEFAULT_CONFIG: StoreConfig = {
   providedIn: 'root',
 })
 export class SiteConfigService {
-  private configSignal = signal<StoreConfig>(this.loadConfig());
+  private http = inject(HttpClient);
+  private configSignal = signal<StoreConfig>(DEFAULT_CONFIG);
+  private loaded = false;
 
   readonly config = this.configSignal.asReadonly();
 
@@ -234,30 +239,63 @@ export class SiteConfigService {
     () => this.configSignal().freeShippingMinimum
   );
 
-  private loadConfig(): StoreConfig {
-    const stored = localStorage.getItem('laluz_site_config');
-    if (stored) {
-      try {
-        return { ...DEFAULT_CONFIG, ...JSON.parse(stored) };
-      } catch {
-        return DEFAULT_CONFIG;
-      }
+  constructor() {
+    this.loadConfigFromAPI();
+  }
+
+  private async loadConfigFromAPI(): Promise<void> {
+    if (this.loaded) return;
+
+    try {
+      const config = await firstValueFrom(
+        this.http.get<StoreConfig>(`${environment.apiUrl}/site-config`)
+      );
+      this.configSignal.set({ ...DEFAULT_CONFIG, ...config });
+      this.loaded = true;
+    } catch (error) {
+      console.warn('Failed to load site config from API, using defaults');
+      this.configSignal.set(DEFAULT_CONFIG);
     }
-    return DEFAULT_CONFIG;
+  }
+
+  async saveConfig(config: StoreConfig): Promise<void> {
+    try {
+      const saved = await firstValueFrom(
+        this.http.put<StoreConfig>(`${environment.apiUrl}/site-config`, config)
+      );
+      this.configSignal.set({ ...DEFAULT_CONFIG, ...saved });
+    } catch (error) {
+      console.error('Failed to save site config:', error);
+      throw error;
+    }
   }
 
   updateConfig(config: Partial<StoreConfig>): void {
     const newConfig = { ...this.configSignal(), ...config };
     this.configSignal.set(newConfig);
-    localStorage.setItem('laluz_site_config', JSON.stringify(newConfig));
   }
 
-  resetToDefaults(): void {
-    this.configSignal.set(DEFAULT_CONFIG);
-    localStorage.removeItem('laluz_site_config');
+  async resetToDefaults(): Promise<void> {
+    try {
+      await firstValueFrom(
+        this.http.put<StoreConfig>(
+          `${environment.apiUrl}/site-config`,
+          DEFAULT_CONFIG
+        )
+      );
+      this.configSignal.set(DEFAULT_CONFIG);
+    } catch (error) {
+      console.error('Failed to reset config:', error);
+      this.configSignal.set(DEFAULT_CONFIG);
+    }
   }
 
   getFullConfig(): StoreConfig {
     return this.configSignal();
+  }
+
+  async refresh(): Promise<void> {
+    this.loaded = false;
+    await this.loadConfigFromAPI();
   }
 }

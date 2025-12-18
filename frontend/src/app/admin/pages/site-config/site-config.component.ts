@@ -698,20 +698,31 @@ export class SiteConfigComponent implements OnInit {
     this.config = { ...this.siteConfigService.getFullConfig() };
   }
 
-  saveConfig() {
+  async saveConfig() {
     this.saving.set(true);
 
-    setTimeout(() => {
-      this.siteConfigService.updateConfig(this.config);
-      this.saving.set(false);
+    try {
+      await this.siteConfigService.saveConfig(this.config);
       alert('Configurações salvas com sucesso!');
-    }, 500);
+    } catch (error) {
+      console.error('Erro ao salvar configurações:', error);
+      alert('Erro ao salvar configurações. Tente novamente.');
+    } finally {
+      this.saving.set(false);
+    }
   }
 
-  resetDefaults() {
+  async resetDefaults() {
     if (confirm('Restaurar todas as configurações para o padrão?')) {
-      this.siteConfigService.resetToDefaults();
-      this.config = { ...this.siteConfigService.getFullConfig() };
+      try {
+        await this.siteConfigService.resetToDefaults();
+        await this.siteConfigService.refresh();
+        this.config = { ...this.siteConfigService.getFullConfig() };
+        alert('Configurações restauradas com sucesso!');
+      } catch (error) {
+        console.error('Erro ao restaurar configurações:', error);
+        alert('Erro ao restaurar configurações.');
+      }
     }
   }
 

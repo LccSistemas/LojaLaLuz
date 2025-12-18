@@ -65,13 +65,6 @@ export const ADMIN_ROUTES: Routes = [
           ),
       },
       {
-        path: 'banners',
-        loadComponent: () =>
-          import('./pages/banners/banners-list.component').then(
-            (m) => m.BannersListComponent
-          ),
-      },
-      {
         path: 'site-config',
         loadComponent: () =>
           import('./pages/site-config/site-config.component').then(

@@ -124,7 +124,9 @@ interface Category {
             <div class="flex items-center justify-between mb-2">
               <h3 class="font-semibold text-gray-900">{{ category.name }}</h3>
               <div class="flex items-center gap-2">
-                <span class="text-xs text-gray-400">Ordem: {{ category.displayOrder || 0 }}</span>
+                <span class="text-xs text-gray-400"
+                  >Ordem: {{ category.displayOrder || 0 }}</span
+                >
                 <span
                   class="px-2 py-1 text-xs rounded-full"
                   [class.bg-green-100]="category.active"
@@ -238,7 +240,9 @@ interface Category {
                   placeholder="0"
                   min="0"
                 />
-                <p class="text-xs text-gray-500 mt-1">Menor número aparece primeiro no menu</p>
+                <p class="text-xs text-gray-500 mt-1">
+                  Menor número aparece primeiro no menu
+                </p>
               </div>
               <label class="flex items-center">
                 <input
