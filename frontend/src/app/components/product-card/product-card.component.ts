@@ -184,11 +184,9 @@ export class ProductCardComponent {
     const product = this.product();
     const variant = product.variants?.[0];
 
-    this.cartService
-      .addToCart(product.id, 1, variant?.id)
-      .subscribe(() => {
-        this.addedToCart.emit(product);
-      });
+    this.cartService.addToCart(product.id, 1, variant?.id).subscribe(() => {
+      this.addedToCart.emit(product);
+    });
   }
 
   toggleWishlist(event: Event): void {

@@ -48,7 +48,11 @@ export class CartService {
   }
 
   // Alias for addToCart
-  addItem(productId: number, quantity: number = 1, variantId?: number): Observable<Cart> {
+  addItem(
+    productId: number,
+    quantity: number = 1,
+    variantId?: number
+  ): Observable<Cart> {
     return this.addToCart(productId, quantity, variantId);
   }
 

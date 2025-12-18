@@ -1,0 +1,27 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Imagens de produtos - leitura pública, escrita pública (temporário para desenvolvimento)
+    // TODO: Adicionar autenticação admin depois
+    match /products/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.resource.size < 5 * 1024 * 1024  // Max 5MB
+                   && request.resource.contentType.matches('image/.*');
+    }
+    
+    // Imagens de categorias
+    match /categories/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.resource.size < 5 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+    }
+    
+    // Imagens de banners
+    match /banners/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.resource.size < 10 * 1024 * 1024  // Max 10MB para banners
+                   && request.resource.contentType.matches('image/.*');
+    }
+  }
+}
