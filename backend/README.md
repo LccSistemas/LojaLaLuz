@@ -106,3 +106,4 @@ git push heroku main
 | JWT_SECRET               | Chave secreta para JWT    |
 | MERCADOPAGO_ACCESS_TOKEN | Token do Mercado Pago     |
 | CORS_ORIGINS             | URLs permitidas para CORS |
+
