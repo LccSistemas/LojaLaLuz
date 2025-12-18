@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -521,7 +521,7 @@ import { AuthService } from '../../services/auth.service';
     </div>
   `,
 })
-export class CheckoutComponent {
+export class CheckoutComponent implements OnInit {
   private router = inject(Router);
   cart = inject(CartService);
   private orderService = inject(OrderService);
@@ -582,6 +582,19 @@ export class CheckoutComponent {
     { uf: 'TO', name: 'Tocantins' },
   ];
 
+  ngOnInit(): void {
+    // Preenche dados do usuário logado
+    if (this.auth.isAuthenticated()) {
+      const user = this.auth.currentUser();
+      if (user) {
+        this.email = user.email || '';
+        this.name = user.name || '';
+        this.phone = (user as any).phone || '';
+        this.address.recipientName = user.name || '';
+      }
+    }
+  }
+
   get shippingCost(): number {
     if (this.shippingMethod === 'express') return 29.9;
     return this.cart.cartTotal() >= 299 ? 0 : 15;
@@ -639,41 +652,66 @@ export class CheckoutComponent {
 
     this.processing.set(true);
 
-    const request: GuestOrderRequest = {
-      guestEmail: this.email,
-      guestName: this.name,
-      guestPhone: this.phone,
-      shippingAddress: {
-        recipientName: this.address.recipientName,
-        zipCode: this.address.zipCode,
-        street: this.address.street,
-        number: this.address.number,
-        complement: this.address.complement || undefined,
-        neighborhood: this.address.neighborhood,
-        city: this.address.city,
-        state: this.address.state,
-        phone: this.address.phone,
-      },
-      paymentMethod: this.paymentMethod as 'PIX' | 'CREDIT_CARD' | 'BOLETO',
-      items: this.cart.cartItems().map((item) => ({
-        productId: item.productId,
-        variantId: item.variantId ?? undefined,
-        quantity: item.quantity,
-      })),
+    const shippingAddress = {
+      recipientName: this.address.recipientName,
+      zipCode: this.address.zipCode,
+      street: this.address.street,
+      number: this.address.number,
+      complement: this.address.complement || undefined,
+      neighborhood: this.address.neighborhood,
+      city: this.address.city,
+      state: this.address.state,
+      phone: this.address.phone,
     };
 
-    this.orderService.createGuestOrder(request).subscribe({
-      next: (order) => {
-        this.cart.clearCart().subscribe();
-        this.router.navigate(['/checkout/success'], {
-          queryParams: { order: order.orderNumber },
-        });
-      },
-      error: (err) => {
-        console.error('Error creating order:', err);
-        this.processing.set(false);
-        alert('Erro ao processar pedido. Tente novamente.');
-      },
-    });
+    // Se usuário está logado, usa endpoint autenticado
+    if (this.auth.isAuthenticated()) {
+      const authenticatedRequest = {
+        shippingAddress,
+        paymentMethod: this.paymentMethod as 'PIX' | 'CREDIT_CARD' | 'BOLETO',
+      };
+
+      this.orderService.createOrder(authenticatedRequest).subscribe({
+        next: (order) => {
+          this.cart.clearCart().subscribe();
+          this.router.navigate(['/checkout/success'], {
+            queryParams: { order: order.orderNumber },
+          });
+        },
+        error: (err) => {
+          console.error('Error creating order:', err);
+          this.processing.set(false);
+          alert('Erro ao processar pedido. Tente novamente.');
+        },
+      });
+    } else {
+      // Guest checkout
+      const request: GuestOrderRequest = {
+        guestEmail: this.email,
+        guestName: this.name,
+        guestPhone: this.phone,
+        shippingAddress,
+        paymentMethod: this.paymentMethod as 'PIX' | 'CREDIT_CARD' | 'BOLETO',
+        items: this.cart.cartItems().map((item) => ({
+          productId: item.productId,
+          variantId: item.variantId ?? undefined,
+          quantity: item.quantity,
+        })),
+      };
+
+      this.orderService.createGuestOrder(request).subscribe({
+        next: (order) => {
+          this.cart.clearCart().subscribe();
+          this.router.navigate(['/checkout/success'], {
+            queryParams: { order: order.orderNumber },
+          });
+        },
+        error: (err) => {
+          console.error('Error creating order:', err);
+          this.processing.set(false);
+          alert('Erro ao processar pedido. Tente novamente.');
+        },
+      });
+    }
   }
 }

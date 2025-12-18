@@ -6,6 +6,7 @@ import com.lojalaluz.api.model.User;
 import com.lojalaluz.api.repository.OrderRepository;
 import com.lojalaluz.api.repository.ProductRepository;
 import com.lojalaluz.api.repository.UserRepository;
+import com.lojalaluz.api.service.AuditService;
 import com.lojalaluz.api.service.CategoryService;
 import com.lojalaluz.api.service.OrderService;
 import com.lojalaluz.api.service.ProductService;
@@ -36,6 +37,7 @@ public class AdminController {
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
+    private final AuditService auditService;
 
     @GetMapping("/dashboard")
     public ResponseEntity<DashboardDTO> getDashboard() {
@@ -81,8 +83,18 @@ public class AdminController {
     @PatchMapping("/orders/{id}/status")
     public ResponseEntity<OrderDTO> updateOrderStatus(
             @PathVariable Long id,
-            @RequestParam Order.OrderStatus status) {
-        return ResponseEntity.ok(orderService.updateOrderStatus(id, status));
+            @RequestBody java.util.Map<String, String> body) {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Pedido não encontrado"));
+        String oldStatus = order.getStatus().name();
+        Order.OrderStatus newStatus = Order.OrderStatus.valueOf(body.get("status"));
+        
+        OrderDTO result = orderService.updateOrderStatus(id, newStatus);
+        
+        // Log de auditoria
+        auditService.logOrderStatusChange(id, oldStatus, newStatus.name());
+        
+        return ResponseEntity.ok(result);
     }
 
     @PatchMapping("/orders/{id}/tracking")

@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CartService } from '../../services/cart.service';
 import { AuthService } from '../../services/auth.service';
 import { CartDrawerComponent } from '../cart-drawer/cart-drawer.component';
@@ -484,6 +484,7 @@ import { CartDrawerComponent } from '../cart-drawer/cart-drawer.component';
   ],
 })
 export class HeaderComponent {
+  private router = inject(Router);
   cart = inject(CartService);
   auth = inject(AuthService);
 
@@ -495,7 +496,8 @@ export class HeaderComponent {
     const query = (event.target as HTMLInputElement).value;
     if (query.trim()) {
       this.searchOpen.set(false);
-      window.location.href = `/produtos?q=${encodeURIComponent(query)}`;
+      this.mobileMenuOpen.set(false);
+      this.router.navigate(['/produtos'], { queryParams: { q: query } });
     }
   }
 

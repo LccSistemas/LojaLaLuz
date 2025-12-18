@@ -205,7 +205,7 @@ import { AuthService } from '../../services/auth.service';
               } @else {
               <a
                 routerLink="/login"
-                [queryParams]="{ redirect: '/checkout' }"
+                [queryParams]="{ returnUrl: '/checkout' }"
                 class="block w-full btn-primary text-center"
               >
                 Fazer Login para Comprar

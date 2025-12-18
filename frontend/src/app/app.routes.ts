@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { adminGuard, authGuard } from './guards/admin.guard';
 
 export const routes: Routes = [
   {
@@ -53,6 +54,7 @@ export const routes: Routes = [
   },
   {
     path: 'conta',
+    canActivate: [authGuard],
     loadComponent: () =>
       import('./pages/account/account.component').then(
         (m) => m.AccountComponent
@@ -78,6 +80,12 @@ export const routes: Routes = [
       import('./pages/checkout-success/checkout-success.component').then(
         (m) => m.CheckoutSuccessComponent
       ),
+  },
+  {
+    path: 'admin',
+    canActivate: [adminGuard],
+    loadChildren: () =>
+      import('./admin/admin.routes').then((m) => m.ADMIN_ROUTES),
   },
   {
     path: '**',

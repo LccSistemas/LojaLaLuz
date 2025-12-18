@@ -198,8 +198,8 @@ export class LoginComponent {
       .subscribe({
         next: () => {
           this.loading.set(false);
-          const redirect = this.route.snapshot.queryParams['redirect'] || '/';
-          this.router.navigateByUrl(redirect);
+          const returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+          this.router.navigateByUrl(returnUrl);
         },
         error: (err) => {
           this.loading.set(false);
