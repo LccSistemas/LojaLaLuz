@@ -34,7 +34,7 @@ import { UploadResult } from '../../../services/image-upload.service';
           <button
             (click)="saveConfig()"
             [disabled]="saving()"
-            class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50"
+            class="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 disabled:opacity-50"
           >
             {{ saving() ? 'Salvando...' : 'Salvar Alterações' }}
           </button>
@@ -48,8 +48,8 @@ import { UploadResult } from '../../../services/image-upload.service';
           <button
             (click)="activeTab = tab.id"
             class="py-3 text-sm font-medium border-b-2 transition-colors"
-            [class.border-primary]="activeTab === tab.id"
-            [class.text-primary]="activeTab === tab.id"
+            [class.border-gray-900]="activeTab === tab.id"
+            [class.text-gray-900]="activeTab === tab.id"
             [class.border-transparent]="activeTab !== tab.id"
             [class.text-gray-500]="activeTab !== tab.id"
           >
