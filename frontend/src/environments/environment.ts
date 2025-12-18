@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:8080/api',
+  apiUrl: 'https://ecommerce-api-calazans-61cda46a9a81.herokuapp.com/api',
 };
