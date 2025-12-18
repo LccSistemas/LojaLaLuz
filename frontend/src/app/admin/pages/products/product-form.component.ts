@@ -523,17 +523,25 @@ export class ProductFormComponent implements OnInit {
 
     const formValue = this.form.value;
     const productData = {
-      ...formValue,
-      images: this.uploadedImages.map((img, index) => ({
-        url: img.url,
-        altText: formValue.name,
-        displayOrder: index,
-        isPrimary: index === 0,
-      })),
-      variants: formValue.variants.map((v: any) => ({
-        ...v,
-        active: true,
-      })),
+      name: formValue.name,
+      description: formValue.description,
+      price: formValue.price,
+      salePrice: formValue.salePrice || null,
+      sku: formValue.sku || null,
+      stockQuantity: formValue.stockQuantity || 0,
+      featured: formValue.featured || false,
+      brand: formValue.brand || null,
+      material: formValue.material || null,
+      categoryId: formValue.categoryId || null,
+      imageUrls: this.uploadedImages.map((img) => img.url),
+      variants: formValue.variants?.map((v: any) => ({
+        size: v.size,
+        color: v.color,
+        colorCode: v.colorCode || null,
+        sku: v.sku || null,
+        stockQuantity: v.stockQuantity || 0,
+        additionalPrice: v.additionalPrice || null,
+      })) || [],
     };
 
     const request = this.isEditing

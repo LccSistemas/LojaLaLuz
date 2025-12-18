@@ -359,7 +359,7 @@ export class OrdersListComponent implements OnInit {
   loadOrders() {
     this.loading.set(true);
 
-    this.http.get<any>(`${environment.apiUrl}/admin/orders`).subscribe({
+    this.http.get<any>(`${environment.apiUrl}/orders/admin/all`).subscribe({
       next: (res) => {
         const orderList = Array.isArray(res) ? res : res.content || [];
         this.orders.set(orderList);

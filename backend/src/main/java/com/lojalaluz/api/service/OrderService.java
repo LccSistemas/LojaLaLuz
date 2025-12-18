@@ -32,6 +32,14 @@ public class OrderService {
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
 
+    /**
+     * Admin: retorna todos os pedidos
+     */
+    public Page<OrderDTO> getAllOrders(Pageable pageable) {
+        return orderRepository.findAll(pageable)
+                .map(this::toDTO);
+    }
+
     public Page<OrderDTO> getUserOrders(Long userId, Pageable pageable) {
         return orderRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable)
                 .map(this::toDTO);

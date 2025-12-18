@@ -24,6 +24,16 @@ public class OrderController {
     private final OrderService orderService;
     private final SecurityUtils securityUtils;
 
+    /**
+     * Admin: lista todos os pedidos
+     */
+    @GetMapping("/admin/all")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Page<OrderDTO>> getAllOrders(
+            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
+        return ResponseEntity.ok(orderService.getAllOrders(pageable));
+    }
+
     @GetMapping
     public ResponseEntity<Page<OrderDTO>> getMyOrders(
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
