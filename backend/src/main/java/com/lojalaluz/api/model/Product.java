@@ -81,7 +81,7 @@ public class Product {
     @PrePersist
     @PreUpdate
     public void generateSlug() {
-        if (this.slug == null || this.slug.isEmpty()) {
+        if ((this.slug == null || this.slug.isEmpty()) && this.name != null) {
             this.slug = this.name.toLowerCase()
                     .replaceAll("[^a-z0-9\\s-]", "")
                     .replaceAll("\\s+", "-")
