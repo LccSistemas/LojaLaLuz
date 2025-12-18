@@ -23,5 +23,26 @@ service firebase.storage {
       allow write: if request.resource.size < 10 * 1024 * 1024  // Max 10MB para banners
                    && request.resource.contentType.matches('image/.*');
     }
+    
+    // Imagens do site (hero, banners split, sale banner)
+    match /site/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.resource.size < 10 * 1024 * 1024  // Max 10MB
+                   && request.resource.contentType.matches('image/.*');
+    }
+    
+    // Imagens do Instagram
+    match /instagram/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.resource.size < 10 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+    }
+    
+    // Pasta geral para uploads temporários
+    match /uploads/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.resource.size < 10 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+    }
   }
 }
