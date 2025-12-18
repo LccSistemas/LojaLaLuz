@@ -7,16 +7,19 @@ export const adminGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
 
   if (!authService.isAuthenticated()) {
-    // Não está logado, redireciona para login com returnUrl
-    router.navigate(['/login'], {
+    // Não está logado, redireciona para login do admin
+    router.navigate(['/admin/login'], {
       queryParams: { returnUrl: state.url },
     });
     return false;
   }
 
   if (!authService.isAdmin()) {
-    // Está logado mas não é admin, redireciona para home
-    router.navigate(['/']);
+    // Está logado mas não é admin, faz logout e redireciona para login do admin
+    authService.logout();
+    router.navigate(['/admin/login'], {
+      queryParams: { returnUrl: state.url },
+    });
     return false;
   }
 
