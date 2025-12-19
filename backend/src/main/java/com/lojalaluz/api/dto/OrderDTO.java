@@ -1,6 +1,7 @@
 package com.lojalaluz.api.dto;
 
 import com.lojalaluz.api.model.Order;
+import com.lojalaluz.api.model.PaymentStatus;
 import lombok.Builder;
 import lombok.Data;
 
@@ -14,7 +15,7 @@ public class OrderDTO {
     private Long id;
     private String orderNumber;
     private Order.OrderStatus status;
-    private Order.PaymentStatus paymentStatus;
+    private PaymentStatus paymentStatus;
     private Order.PaymentMethod paymentMethod;
     private List<OrderItemDTO> items;
     private BigDecimal subtotal;

@@ -120,10 +120,15 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        // Processar pagamento
-        String paymentUrl = paymentService.createPayment(savedOrder);
-        savedOrder.setPaymentUrl(paymentUrl);
-        savedOrder = orderRepository.save(savedOrder);
+        // Processar pagamento baseado no método escolhido
+        if (savedOrder.getPaymentMethod() == Order.PaymentMethod.PIX) {
+            // PIX retorna dados do QR Code, não URL
+            paymentService.createPixPayment(savedOrder);
+        } else {
+            String paymentUrl = paymentService.createCardPayment(savedOrder);
+            savedOrder.setPaymentUrl(paymentUrl);
+            savedOrder = orderRepository.save(savedOrder);
+        }
 
         // Limpar carrinho
         cart.clear();
@@ -197,10 +202,15 @@ public class OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        // Processar pagamento
-        String paymentUrl = paymentService.createPayment(savedOrder);
-        savedOrder.setPaymentUrl(paymentUrl);
-        savedOrder = orderRepository.save(savedOrder);
+        // Processar pagamento baseado no método escolhido
+        if (savedOrder.getPaymentMethod() == Order.PaymentMethod.PIX) {
+            // PIX retorna dados do QR Code, não URL
+            paymentService.createPixPayment(savedOrder);
+        } else {
+            String paymentUrl = paymentService.createCardPayment(savedOrder);
+            savedOrder.setPaymentUrl(paymentUrl);
+            savedOrder = orderRepository.save(savedOrder);
+        }
 
         // Enviar email de confirmação com magic link
         if (!user.getAccountActivated()) {
@@ -261,7 +271,7 @@ public class OrderService {
         switch (status) {
             case PAID:
                 order.setPaidAt(LocalDateTime.now());
-                order.setPaymentStatus(Order.PaymentStatus.APPROVED);
+                order.setPaymentStatus(PaymentStatus.APPROVED);
                 break;
             case SHIPPED:
                 order.setShippedAt(LocalDateTime.now());
@@ -270,7 +280,7 @@ public class OrderService {
                 order.setDeliveredAt(LocalDateTime.now());
                 break;
             case CANCELLED:
-                order.setPaymentStatus(Order.PaymentStatus.CANCELLED);
+                order.setPaymentStatus(PaymentStatus.CANCELLED);
                 break;
             default:
                 break;
@@ -281,16 +291,16 @@ public class OrderService {
     }
 
     @Transactional
-    public void updatePaymentStatus(String paymentId, Order.PaymentStatus status) {
+    public void updatePaymentStatus(String paymentId, PaymentStatus status) {
         Order order = orderRepository.findByPaymentId(paymentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Pedido não encontrado"));
 
         order.setPaymentStatus(status);
 
-        if (status == Order.PaymentStatus.APPROVED) {
+        if (status == PaymentStatus.APPROVED) {
             order.setStatus(Order.OrderStatus.PAID);
             order.setPaidAt(LocalDateTime.now());
-        } else if (status == Order.PaymentStatus.REJECTED || status == Order.PaymentStatus.CANCELLED) {
+        } else if (status == PaymentStatus.REJECTED || status == PaymentStatus.CANCELLED) {
             order.setStatus(Order.OrderStatus.CANCELLED);
         }
 

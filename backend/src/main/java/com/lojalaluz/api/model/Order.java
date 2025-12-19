@@ -27,8 +27,12 @@ public class Order {
     private String orderNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "user_id")
     private User user;
+
+    // Para compras como convidado
+    private String guestEmail;
+    private String guestName;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
@@ -67,6 +71,12 @@ public class Order {
     private String paymentId; // ID do Mercado Pago
 
     private String paymentUrl; // URL para pagamento
+
+    @Column(columnDefinition = "TEXT")
+    private String pixQrCode; // Código PIX copia e cola
+
+    @Column(columnDefinition = "TEXT")
+    private String pixQrCodeBase64; // QR Code em Base64
 
     private String trackingCode; // Código de rastreio
 
@@ -120,13 +130,5 @@ public class Order {
         CREDIT_CARD,
         DEBIT_CARD,
         BOLETO
-    }
-
-    public enum PaymentStatus {
-        PENDING,
-        APPROVED,
-        REJECTED,
-        REFUNDED,
-        CANCELLED
     }
 }

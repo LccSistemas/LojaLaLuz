@@ -32,6 +32,17 @@ app:
     access-token: ${MERCADOPAGO_ACCESS_TOKEN:TEST-ACCESS-TOKEN}
     public-key: ${MERCADOPAGO_PUBLIC_KEY:TEST-PUBLIC-KEY}
 
+  frontend-url: ${FRONTEND_URL:http://localhost:4200}
+  backend-url: ${BACKEND_URL:http://localhost:8080}
+
+  sendgrid:
+    api-key: ${SENDGRID_API_KEY:}
+    from-email: ${SENDGRID_FROM_EMAIL:noreply@lojalaluz.com.br}
+    from-name: ${SENDGRID_FROM_NAME:La Luz}
+
+  email:
+    enabled: ${EMAIL_ENABLED:false}
+
 # CORS
 cors:
   allowed-origins: ${CORS_ORIGINS:http://localhost:4200,http://localhost:3000}
