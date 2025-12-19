@@ -2,6 +2,7 @@ package com.lojalaluz.api.service;
 
 import com.lojalaluz.api.model.Order;
 import com.lojalaluz.api.model.PaymentStatus;
+import com.lojalaluz.api.model.User;
 import com.lojalaluz.api.repository.OrderRepository;
 import com.mercadopago.MercadoPagoConfig;
 import com.mercadopago.client.payment.PaymentClient;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -31,6 +33,7 @@ import java.util.Map;
 public class PaymentService {
 
     private final OrderRepository orderRepository;
+    private final EmailService emailService;
 
     @Value("${app.mercadopago.access-token}")
     private String accessToken;
@@ -215,24 +218,43 @@ public class PaymentService {
                 
                 String orderNumber = payment.getExternalReference();
                 String status = payment.getStatus();
+                String statusDetail = payment.getStatusDetail();
                 
-                log.info("Webhook: Pedido {} - Status: {}", orderNumber, status);
+                log.info("Webhook: Pedido {} - Status: {} - Detail: {}", orderNumber, status, statusDetail);
                 
                 orderRepository.findByOrderNumber(orderNumber).ifPresent(order -> {
+                    User user = order.getUser();
+                    PaymentStatus previousStatus = order.getPaymentStatus();
+                    
                     switch (status) {
                         case "approved":
                             order.setPaymentStatus(PaymentStatus.APPROVED);
+                            order.setPaidAt(LocalDateTime.now());
+                            order.setStatus(Order.OrderStatus.PAID);
                             log.info("Pagamento aprovado para pedido {}", orderNumber);
+                            
+                            // Enviar email de confirmação de pagamento
+                            if (user != null && previousStatus != PaymentStatus.APPROVED) {
+                                emailService.sendPaymentConfirmation(user, order);
+                            }
                             break;
+                            
                         case "pending":
                         case "in_process":
                             order.setPaymentStatus(PaymentStatus.PENDING);
                             break;
+                            
                         case "rejected":
                         case "cancelled":
                             order.setPaymentStatus(PaymentStatus.REJECTED);
-                            log.warn("Pagamento rejeitado para pedido {}", orderNumber);
+                            log.warn("Pagamento rejeitado para pedido {} - Motivo: {}", orderNumber, statusDetail);
+                            
+                            // Enviar email de pagamento rejeitado
+                            if (user != null) {
+                                emailService.sendPaymentRejected(user, order, statusDetail);
+                            }
                             break;
+                            
                         case "refunded":
                             order.setPaymentStatus(PaymentStatus.REFUNDED);
                             break;

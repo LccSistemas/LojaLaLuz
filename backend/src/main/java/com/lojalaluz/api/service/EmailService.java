@@ -303,4 +303,122 @@ public class EmailService {
         html.append("</body></html>");
         return html.toString();
     }
+
+    /**
+     * Envia email de pagamento rejeitado
+     */
+    @Async
+    public void sendPaymentRejected(User user, Order order, String reason) {
+        String subject = "⚠️ Pagamento não aprovado - Pedido #" + order.getOrderNumber() + " - La Luz";
+        String htmlContent = buildPaymentRejectedHtml(user, order, reason);
+        
+        sendEmail(user.getEmail(), subject, htmlContent);
+    }
+
+    private String buildPaymentRejectedHtml(User user, Order order, String reason) {
+        StringBuilder html = new StringBuilder();
+        html.append("<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;'>");
+        
+        html.append("<div style='text-align: center; padding: 20px 0;'>");
+        html.append("<h1 style='color: #333;'>LA LUZ</h1>");
+        html.append("</div>");
+        
+        html.append("<div style='padding: 20px; text-align: center;'>");
+        html.append("<h2 style='color: #d32f2f;'>❌ Pagamento Não Aprovado</h2>");
+        html.append("<p>Olá <strong>").append(user.getName()).append("</strong>,</p>");
+        html.append("<p>Infelizmente o pagamento do seu pedido #").append(order.getOrderNumber()).append(" não foi aprovado.</p>");
+        html.append("</div>");
+        
+        html.append("<div style='background: #ffebee; padding: 20px; border-radius: 8px; margin: 20px 0;'>");
+        html.append("<p><strong>Motivo:</strong> ").append(translateRejectionReason(reason)).append("</p>");
+        html.append("</div>");
+        
+        html.append("<div style='padding: 20px;'>");
+        html.append("<p><strong>O que você pode fazer:</strong></p>");
+        html.append("<ul>");
+        html.append("<li>Verificar os dados do cartão</li>");
+        html.append("<li>Verificar o limite disponível</li>");
+        html.append("<li>Tentar outro método de pagamento (PIX tem 5% de desconto!)</li>");
+        html.append("<li>Entrar em contato com seu banco</li>");
+        html.append("</ul>");
+        html.append("</div>");
+        
+        html.append("<div style='text-align: center; padding: 20px;'>");
+        html.append("<a href='").append(frontendUrl).append("/checkout/retry/").append(order.getOrderNumber()).append("' ");
+        html.append("style='background: #333; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: inline-block;'>");
+        html.append("Tentar Novamente</a>");
+        html.append("</div>");
+        
+        html.append("<div style='background: #e3f2fd; padding: 15px; border-radius: 8px; text-align: center; margin-top: 20px;'>");
+        html.append("<p style='margin: 0;'>💡 <strong>Dica:</strong> Pagando com PIX você tem 5% de desconto!</p>");
+        html.append("</div>");
+        
+        html.append("<div style='text-align: center; padding: 20px 0; border-top: 1px solid #eee; color: #888; font-size: 12px; margin-top: 20px;'>");
+        html.append("<p>Seu pedido ficará reservado por 24 horas.</p>");
+        html.append("<p>Dúvidas? contato@lojalaluz.com.br</p>");
+        html.append("</div>");
+        
+        html.append("</body></html>");
+        return html.toString();
+    }
+
+    private String translateRejectionReason(String reason) {
+        if (reason == null) return "Pagamento não autorizado";
+        
+        return switch (reason) {
+            case "cc_rejected_insufficient_amount" -> "Saldo insuficiente no cartão";
+            case "cc_rejected_bad_filled_card_number" -> "Número do cartão incorreto";
+            case "cc_rejected_bad_filled_date" -> "Data de validade incorreta";
+            case "cc_rejected_bad_filled_security_code" -> "Código de segurança incorreto";
+            case "cc_rejected_bad_filled_other" -> "Dados do cartão incorretos";
+            case "cc_rejected_call_for_authorize" -> "Você precisa autorizar a operação com seu banco";
+            case "cc_rejected_card_disabled" -> "Cartão desabilitado - entre em contato com seu banco";
+            case "cc_rejected_duplicated_payment" -> "Pagamento duplicado - você já fez esse pagamento";
+            case "cc_rejected_high_risk" -> "Pagamento recusado por segurança";
+            case "cc_rejected_max_attempts" -> "Limite de tentativas excedido";
+            case "cc_rejected_other_reason" -> "Pagamento não autorizado pelo banco";
+            default -> "Pagamento não autorizado - entre em contato com seu banco";
+        };
+    }
+
+    /**
+     * Envia email de PIX expirado
+     */
+    @Async
+    public void sendPixExpired(User user, Order order) {
+        String subject = "⏰ PIX expirado - Pedido #" + order.getOrderNumber() + " - La Luz";
+        String htmlContent = buildPixExpiredHtml(user, order);
+        
+        sendEmail(user.getEmail(), subject, htmlContent);
+    }
+
+    private String buildPixExpiredHtml(User user, Order order) {
+        StringBuilder html = new StringBuilder();
+        html.append("<!DOCTYPE html><html><head><meta charset='UTF-8'></head><body style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;'>");
+        
+        html.append("<div style='text-align: center; padding: 20px 0;'>");
+        html.append("<h1 style='color: #333;'>LA LUZ</h1>");
+        html.append("</div>");
+        
+        html.append("<div style='padding: 20px; text-align: center;'>");
+        html.append("<h2 style='color: #ff9800;'>⏰ PIX Expirado</h2>");
+        html.append("<p>Olá <strong>").append(user.getName()).append("</strong>,</p>");
+        html.append("<p>O código PIX do seu pedido #").append(order.getOrderNumber()).append(" expirou.</p>");
+        html.append("<p>Mas não se preocupe! Você pode gerar um novo código.</p>");
+        html.append("</div>");
+        
+        html.append("<div style='text-align: center; padding: 20px;'>");
+        html.append("<a href='").append(frontendUrl).append("/checkout/retry/").append(order.getOrderNumber()).append("' ");
+        html.append("style='background: #333; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; display: inline-block;'>");
+        html.append("Gerar Novo PIX</a>");
+        html.append("</div>");
+        
+        html.append("<div style='background: #e8f5e9; padding: 15px; border-radius: 8px; text-align: center;'>");
+        html.append("<p style='margin: 0;'>✨ Pagando com PIX você continua tendo 5% de desconto!</p>");
+        html.append("</div>");
+        
+        html.append("</body></html>");
+        return html.toString();
+    }
 }
+
